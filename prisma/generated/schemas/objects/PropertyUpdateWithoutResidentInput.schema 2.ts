@@ -1,0 +1,27 @@
+import { z } from "zod";
+import { StringFieldUpdateOperationsInputObjectSchema } from "./StringFieldUpdateOperationsInput.schema";
+import { KeyManagementUpdateManyWithoutPropertyNestedInputObjectSchema } from "./KeyManagementUpdateManyWithoutPropertyNestedInput.schema";
+
+import type { Prisma } from "@prisma/client";
+
+const Schema: z.ZodType<Prisma.PropertyUpdateWithoutResidentInput> = z
+  .object({
+    id: z
+      .union([
+        z.string(),
+        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
+      ])
+      .optional(),
+    name: z
+      .union([
+        z.string(),
+        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
+      ])
+      .optional(),
+    KeyManagement: z
+      .lazy(() => KeyManagementUpdateManyWithoutPropertyNestedInputObjectSchema)
+      .optional(),
+  })
+  .strict();
+
+export const PropertyUpdateWithoutResidentInputObjectSchema = Schema;
