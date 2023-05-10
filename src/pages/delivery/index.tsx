@@ -1,7 +1,9 @@
-import { FC } from "react";
+import { NextAuthComponentType } from "~/types/AuthComponent";
 
-const DeliveryPage: FC = () => {
+const DeliveryPage: NextAuthComponentType = () => {
   return <>Hello :::: DeliveryPage </>;
 };
+
+DeliveryPage.auth = true;
 
 export default DeliveryPage;

@@ -1,3 +1,4 @@
+import { GetSessionParams, getSession } from "next-auth/react";
 import { Html, Head, NextScript, Main } from "next/document";
 
 export default function Document() {

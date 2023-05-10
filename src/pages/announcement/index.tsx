@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
-import { FC } from "react";
 import { api } from "~/utils/api";
 import type { Announce } from "~/types/Annouce";
 import { MdSearch } from "react-icons/md";
 import Table from "~/components/Table/Table";
+import { NextAuthComponentType } from "~/types/AuthComponent";
 
-const Announcement: FC = () => {
+const Announcement: NextAuthComponentType = () => {
   const router = useRouter();
   const { data, isError, isLoading } =
     api.announce.getAll.useQuery<Announce[]>();
@@ -55,5 +55,6 @@ const Announcement: FC = () => {
     </>
   );
 };
+Announcement.auth = true;
 
 export default Announcement;

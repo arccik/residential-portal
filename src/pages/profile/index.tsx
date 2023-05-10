@@ -2,9 +2,10 @@ import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Announce } from "~/types/Annouce";
+import { NextAuthComponentType } from "~/types/AuthComponent";
 import { api } from "~/utils/api";
 
-const Profile: NextPage = () => {
+const Profile: NextAuthComponentType = () => {
   const { data: sessionData, status } = useSession();
   const router = useRouter();
   if (status === "loading") return <div>Loading...</div>;
@@ -29,4 +30,5 @@ const Profile: NextPage = () => {
   );
 };
 
+Profile.auth = true;
 export default Profile;

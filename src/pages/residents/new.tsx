@@ -5,9 +5,12 @@ import { Resident } from "@prisma/client";
 import { api } from "~/utils/api";
 import { ResidentCreateInputObjectSchema } from "prisma/generated/schemas";
 
+import { MdError, MdExitToApp } from "react-icons/md";
+import { NextAuthComponentType } from "~/types/AuthComponent";
+
 type ResidentInputValue = Resident | { confirmPassword: string };
 
-const NewResident: FC = () => {
+const NewResident: NextAuthComponentType = () => {
   const {
     register,
     formState: { errors, isSubmitSuccessful },
@@ -17,7 +20,7 @@ const NewResident: FC = () => {
   } = useForm<ResidentInputValue>({
     mode: "onTouched",
 
-    resolver: zodResolver(ResidentCreateInputObjectSchema),
+    // resolver: zodResolver(ResidentInputValue),
   });
 
   const { data: propertyList, status: propertyStatus } =
@@ -38,9 +41,7 @@ const NewResident: FC = () => {
                 className="select-bordered select mb-5 w-full max-w-xs"
                 {...register("title")}
               >
-                <option disabled selected>
-                  Select Title
-                </option>
+                <option disabled>Select Title</option>
                 {["Mr", "Mrs", "Miss", "Ms", "Dr"].map((title) => (
                   <option>{title}</option>
                 ))}
@@ -134,13 +135,18 @@ const NewResident: FC = () => {
           </div>
           {errors &&
             Object.entries(errors).map(([error, msg]) => (
-              <p key={error} className="ml-2 text-xs text-red-500">
-                {`${error}: ${msg.message || msg.type}`}
-              </p>
+              <div className="alert alert-error mb-4 mt-4 shadow-lg">
+                <div>
+                  <MdError />
+                  <span>
+                    Field {error} {msg?.message?.toString()}
+                  </span>
+                </div>
+              </div>
             ))}
           <button
             type="submit"
-            className="btn-primary btn-wide btn  justify-center md:m-0"
+            className="btn-primary btn-wide btn  mt-10 justify-center md:m-0"
           >
             Save
           </button>
@@ -149,5 +155,6 @@ const NewResident: FC = () => {
     </>
   );
 };
+NewResident.auth = true;
 
 export default NewResident;

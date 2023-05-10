@@ -1,25 +1,44 @@
-import { zodResolver } from "@hookform/resolvers/zod/dist/zod";
-import { FC, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { AnnounceCreateInput } from "~/types/Annouce";
 import { api } from "~/utils/api";
+import { AnnouncementCreateInputObjectSchema } from "../../../prisma/generated/schemas";
+import Alert from "~/components/widgets/Alert";
+import { AnnouncementValidation } from "~/validations/announcement";
+import { useRouter } from "next/router";
 
-const NewAnnouncement: FC = () => {
-  const { mutate } = api.announce.create.useMutation<AnnounceCreateInput>({});
+import DateSelectRange from "~/components/Announcement/DateSelectRange";
+import { NextAuthComponentType } from "~/types/AuthComponent";
+
+const NewAnnouncement: NextAuthComponentType = () => {
+  const { mutate } = api.announce.create.useMutation<
+    typeof AnnouncementCreateInputObjectSchema
+  >({});
+  const router = useRouter();
+
   const {
     register,
+    unregister,
     formState: { errors, isSubmitSuccessful },
     reset,
     handleSubmit,
-  } = useForm<AnnounceCreateInput>();
+    watch,
+  } = useForm<AnnounceCreateInput>({
+    resolver: zodResolver(AnnouncementValidation),
+  });
 
   useEffect(() => {
-    if (isSubmitSuccessful) reset();
+    if (isSubmitSuccessful) {
+      reset();
+      router.push("/announcements");
+    }
   }, [isSubmitSuccessful]);
   const onSubmitHandler = (data: AnnounceCreateInput) => {
     const response = mutate(data);
     console.log("On Submit reponse :>>> ", response);
   };
+
   return (
     <>
       <div className="container  md:mx-auto">
@@ -29,12 +48,17 @@ const NewAnnouncement: FC = () => {
             <div>
               <input
                 {...register("subject")}
-                className="input-bordered input mb-5 w-full max-w-xl"
+                className={
+                  "input-bordered input mb-5 w-full max-w-xl " +
+                  (errors.subject ? "border-red-500" : "")
+                }
               />
               <textarea
                 {...register("text")}
                 placeholder="Type here"
-                className="textarea-bordered textarea textarea-lg mt-4 w-full max-w-xl"
+                className={`textarea-bordered textarea textarea-lg mt-4 w-full max-w-xl ${
+                  errors["text"] ? "border-red-500" : ""
+                }`}
               ></textarea>
             </div>
             <div>
@@ -45,31 +69,7 @@ const NewAnnouncement: FC = () => {
                 className="input-bordered input mb-5 w-full max-w-xs"
               />
               <div className="btn-group btn-group-vertical mt-10 w-full gap-5">
-                <button type="button" className="btn">
-                  Select Date
-                </button>
-                <div className="grid grid-cols-2">
-                  <div className="grid-cols-2">
-                    <label htmlFor="startDate" className="m-0">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      {...register("startDate", { valueAsDate: true })}
-                      className="input-bordered input mb-5 w-full max-w-xs"
-                    />
-                  </div>
-                  <div className="grid-cols-2">
-                    <label htmlFor="endDate" className="m-0">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      {...register("endDate", { valueAsDate: true })}
-                      className="input-bordered input mb-5 w-full max-w-xs"
-                    />
-                  </div>
-                </div>
+                <DateSelectRange register={register} errors={errors} />
                 <button type="button" className="btn">
                   Email Users
                 </button>
@@ -91,16 +91,24 @@ const NewAnnouncement: FC = () => {
               </div>
             </div>
           </div>
+          {errors &&
+            Object.entries(errors).map(([key, value]) => {
+              if (value?.message)
+                return <Alert key={key} msg={value?.message} />;
+            })}
           <button
             type="submit"
+            disabled={Object.entries(errors).length > 0}
             className="btn-primary btn-wide btn  justify-center md:m-0"
           >
             Post Announcement
           </button>
+          {JSON.stringify(watch())}
         </form>
       </div>
     </>
   );
 };
 
+NewAnnouncement.auth = true;
 export default NewAnnouncement;

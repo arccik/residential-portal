@@ -2,9 +2,10 @@ import Link from "next/link";
 import { FC } from "react";
 import Table from "~/components/Table/Table";
 import { newResidentLink } from "~/links/list";
+import { NextAuthComponentType } from "~/types/AuthComponent";
 import { api } from "~/utils/api";
 
-const Residents: FC = () => {
+const Residents: NextAuthComponentType = () => {
   const {
     data: residentsData,
     isLoading,
@@ -34,5 +35,7 @@ const Residents: FC = () => {
     </>
   );
 };
+
+Residents.auth = true;
 
 export default Residents;
